@@ -22,11 +22,12 @@ on:
       armbian_board:
         description: "Select device board."
         required: false
-        default: "all"
+        default: "lt-d3568"
         type: choice
         options:
           - all
           - top55
+          - lt-d3568
           - after55
           - a311d-oes_s922x-oes-plus_wxy-oect
           - s905d_s905x3_s912_s922x-ct2000
@@ -191,9 +192,10 @@ on:
       armbian_kernel:
         description: "Select kernel version."
         required: false
-        default: "6.1.y_6.12.y"
+        default: "6.1.y_rk35xx"
         type: choice
         options:
+          - rk35xx
           - 5.4.y
           - 5.10.y
           - 5.15.y
