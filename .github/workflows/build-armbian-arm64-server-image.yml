@@ -195,7 +195,6 @@ on:
         default: "6.1.y_5.10.y"
         type: choice
         options:
-          - rk35xx
           - 5.4.y
           - 5.10.y
           - 5.15.y
