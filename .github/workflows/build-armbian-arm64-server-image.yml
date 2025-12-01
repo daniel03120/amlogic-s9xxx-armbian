@@ -192,7 +192,7 @@ on:
       armbian_kernel:
         description: "Select kernel version."
         required: false
-        default: "6.1.y_rk35xx"
+        default: "6.1.y_5.10.y"
         type: choice
         options:
           - rk35xx
@@ -225,6 +225,7 @@ on:
         default: "stable"
         type: choice
         options:
+          - rk35xx
           - stable
           - flippy
           - beta
