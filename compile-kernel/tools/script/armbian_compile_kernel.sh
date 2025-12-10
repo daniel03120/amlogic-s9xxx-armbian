@@ -579,6 +579,14 @@ compile_env() {
         else
             echo -e "${INFO} Skip Rust environment configuration for kernel version [ ${kernel_version} ]"
         fi
+       # RK3568平台特殊处理
+        if [ "$DEVICE" = "rk3568" ]; then
+           EXTRA_CFLAGS+=" -mtune=cortex-a55"
+           # 启用硬件加速编解码
+           sed -i 's/#CONFIG_VIDEO_ROCKCHIP_VDEC/CONFIG_VIDEO_ROCKCHIP_VDEC/' .config
+           # 配置NPU内存分配
+            echo "CONFIG_ROCKCHIP_NPU_MEM_SIZE=0x20000000" >> .config
+       fi
     }
 
     # Make menuconfig
