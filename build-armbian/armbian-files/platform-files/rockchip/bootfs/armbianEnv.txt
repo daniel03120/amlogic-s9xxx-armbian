@@ -1,6 +1,6 @@
 verbosity=1
 bootlogo=false
-fdtfile=rockchip/rk3568-lt-d3568.dtb
+fdtfile=rockchip/rk3568-rock-3a.dtb
 rootdev=/dev/mmcblk0p2
 rootfstype=ext4
 rootflags=rw,errors=remount-ro
