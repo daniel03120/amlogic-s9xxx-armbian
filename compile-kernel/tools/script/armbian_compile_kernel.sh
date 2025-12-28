@@ -100,7 +100,7 @@ kernel_config_download="false"
 # Compile toolchain download mirror, run on Armbian
 dev_repo="https://github.com/ophub/kernel/releases/download/dev"
 # Arm GNU Toolchain source: https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
-gun_file="arm-gnu-toolchain-14.3.rel1-aarch64-aarch64-none-linux-gnu.tar.xz"
+gun_file="arm-gnu-toolchain-15.2.rel1-aarch64-aarch64-none-linux-gnu.tar.xz"
 # Set the toolchain path
 toolchain_path="/usr/local/toolchain"
 # Set the default cross-compilation toolchain: [ clang / gcc / gcc-14.2, etc. ]
@@ -145,7 +145,7 @@ init_var() {
     echo -e "${STEPS} Start Initializing Variables..."
 
     # If it is followed by [ : ], it means that the option requires a parameter value
-    local options="k:a:n:m:p:r:t:c:d:s:z:l:g:"
+    local options="k:a:n:m:p:r:t:c:d:s:z:l:g:h:i:"
     parsed_args=$(getopt -o "${options}" -- "${@}")
     [[ ${?} -ne 0 ]] && error_msg "Parameter parsing failed."
     eval set -- "${parsed_args}"
@@ -265,6 +265,14 @@ init_var() {
                 error_msg "Invalid -l parameter [ ${2} ]!"
             fi
             ;;
+        # Ignore parameters used by the host system
+        -h | -i)
+            if [[ -n "${2}" ]]; then
+                shift 2
+            else
+                error_msg "Invalid ${1} parameter [ ${2} ]!"
+            fi
+            ;;
         --)
             shift
             break
@@ -308,6 +316,12 @@ toolchain_check() {
     sudo apt-get -qq update
     sudo apt-get -qq install -y $(cat compile-kernel/tools/script/armbian-compile-kernel-depends)
 
+    echo -e "${INFO} Configuring Git for large file downloads..."
+    git config --global http.postBuffer 524288000
+    git config --global core.compression 0
+    git config --global http.version HTTP/1.1
+
+    echo -e "${INFO} Checking and installing the [ ${toolchain_name} ] toolchain..."
     # Set the default path
     path_os_variable="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
 
@@ -871,7 +885,7 @@ loop_recompile() {
         fi
 
         # Show server start information
-        echo -e "${INFO} Server space usage before starting to compile: \n$(df -hT ${kernel_path}) \n"
+        echo -e "${INFO} Armbian space usage before starting to compile: \n$(df -hT ${kernel_path}) \n"
 
         # Check disk space size
         echo -ne "(${j}) Start compiling the kernel [\033[92m ${kernel_version} \033[0m]. "
@@ -895,8 +909,9 @@ loop_recompile() {
 }
 
 # Show welcome message
-echo -e "${STEPS} Welcome to compile kernel! \n"
-echo -e "${INFO} Server running on Armbian: [ Release: ${host_release} / Host: ${arch_info} ] \n"
+echo -e "${STEPS} Start compiling the kernel with Armbian..."
+echo -e "${INFO} The Armbian environment [ ${host_release} / ${arch_info} ]"
+
 # Check script permission, supports running on Armbian system.
 [[ "$(id -u)" == "0" ]] || error_msg "Please run this script as root: [ sudo ./${0} ]"
 [[ "${arch_info}" == "aarch64" ]] || error_msg "The script only supports running under Armbian system."
@@ -928,5 +943,5 @@ echo -e "${INFO} Kernel List: [ $(echo ${build_kernel[@]} | xargs) ] \n"
 loop_recompile
 
 # Show server end information
-echo -e "${STEPS} Server space usage after compilation: \n$(df -hT ${kernel_path}) \n"
-echo -e "${SUCCESS} All process completed successfully."
+echo -e "${STEPS} Armbian space usage after compilation: \n$(df -hT ${kernel_path}) \n"
+echo -e "${SUCCESS} Kernel compiled successfully"
